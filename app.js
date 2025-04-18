@@ -350,6 +350,9 @@ function showOpportunities(partnerName, filter, year, status) {
     html += '</tbody></table>';
   }
   modalBody.innerHTML = html;
+  // Add export button
+  const btn = addExportModalBtn(partnerName, filter, year, status);
+  modalBody.prepend(btn);
   modal.classList.remove('hidden');
 }
 
@@ -387,3 +390,116 @@ document.querySelectorAll('.sortable').forEach(th => {
     renderTable(timeFilter.value, yearSelect.value);
   };
 });
+
+// --- CSV EXPORT ---
+function exportDashboardCSV(filter, year) {
+  let dataToRender = mockData;
+  if (currentSort.col) {
+    dataToRender = sortData(mockData, filter, currentSort.col, currentSort.dir, year);
+  }
+  let rows = [[
+    'Partner',
+    'Closed Won Revenue',
+    'Closed Won Gross Profit',
+    'Closed Lost Revenue',
+    'Closed Lost Gross Profit',
+    'Forecasted Revenue',
+    'Forecasted Gross Profit'
+  ]];
+  let totalWon = 0, totalWonGP = 0, totalLost = 0, totalLostGP = 0, totalForecast = 0, totalForecastGP = 0;
+  dataToRender.forEach(partner => {
+    const agg = aggregate(partner, filter, year);
+    rows.push([
+      partner.partner,
+      agg.closedWon.rev,
+      agg.closedWon.gp,
+      agg.closedLost.rev,
+      agg.closedLost.gp,
+      agg.forecast.rev,
+      agg.forecast.gp
+    ]);
+    totalWon += agg.closedWon.rev;
+    totalWonGP += agg.closedWon.gp;
+    totalLost += agg.closedLost.rev;
+    totalLostGP += agg.closedLost.gp;
+    totalForecast += agg.forecast.rev;
+    totalForecastGP += agg.forecast.gp;
+  });
+  // Totals row
+  rows.push([
+    'TOTALS',
+    totalWon,
+    totalWonGP,
+    totalLost,
+    totalLostGP,
+    totalForecast,
+    totalForecastGP
+  ]);
+  const csv = rows.map(r => r.map(x => `"${x}"`).join(",")).join("\r\n");
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `dashboard_${filter}_${year}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 0);
+}
+
+document.getElementById('export-dashboard-csv').onclick = function() {
+  exportDashboardCSV(timeFilter.value, yearSelect.value);
+};
+
+// --- EXPORT OPPORTUNITIES FROM MODAL ---
+function exportOpportunitiesCSV(partnerName, filter, year, status) {
+  const partner = mockData.find(p => p.partner === partnerName);
+  if (!partner) return;
+  let opps = filterOpportunities(partner.opportunities, filter, year);
+  if (status) opps = opps.filter(o => o.status === status);
+  let rows = [[
+    'Opportunity Name', 'Company', 'Status', 'Revenue', 'Gross Profit', 'Sales Rep', 'SA', 'Close Date'
+  ]];
+  let totalRev = 0, totalGP = 0;
+  opps.forEach(opp => {
+    rows.push([
+      opp.name,
+      opp.company,
+      opp.status,
+      opp.revenue,
+      opp.grossProfit,
+      opp.salesRep,
+      opp.sa,
+      opp.closeDate
+    ]);
+    totalRev += opp.revenue;
+    totalGP += opp.grossProfit;
+  });
+  // Totals row
+  rows.push(['TOTALS', '', '', totalRev, totalGP, '', '', '']);
+  const csv = rows.map(r => r.map(x => `"${x}"`).join(",")).join("\r\n");
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `opportunities_${partnerName.replace(/\s/g,'_')}_${filter}_${year}${status ? '_' + status.replace(/\s/g,'_') : ''}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 0);
+}
+
+// Add export button to modal dynamically
+function addExportModalBtn(partnerName, filter, year, status) {
+  let btn = document.createElement('button');
+  btn.textContent = 'Export Opportunities CSV';
+  btn.className = 'export-btn';
+  btn.onclick = function() {
+    exportOpportunitiesCSV(partnerName, filter, year, status);
+  };
+  return btn;
+}
