@@ -10,7 +10,7 @@ This dashboard provides a mock, interactive view of aggregate sales activity for
 - **Details on click**: Click any partner or revenue cell to drill down into opportunity-level details, including company, status, revenue, gross profit, sales rep, SA, and close date, with subtotals.
 - **Branding**: Aqueduct Technologies logo in the upper left for a professional look.
 - **Fully interactive**: Sorting, filtering, and drill-downs are all handled in-browser with no backend required.
-- **Export**: Export the dashboard as CSV, Excel (.xlsx), or PDF with a single click. All exports reflect current filters and sorting.
+- **Export**: Export the dashboard as CSV with a single click. The export reflects current filters and sorting.
 
 ## How to Use
 1. **Open the Dashboard**
@@ -21,15 +21,14 @@ This dashboard provides a mock, interactive view of aggregate sales activity for
    - Click any column header to sort by that column.
    - Click on a partner name or any revenue/gross profit figure to see detailed opportunities for that partner and period.
 3. **Export Reports**
-   - Use the export buttons at the top to download the dashboard as CSV, Excel, or PDF.
-   - Exports always include all visible partners and totals, matching your current filters and sort order.
+   - Use the CSV button at the top to download the dashboard as a CSV file.
+   - The export always includes all visible partners and totals, matching your current filters and sort order.
 
 ## How It Was Built
 - **HTML/CSS/JavaScript only**: No frameworks or build steps. All logic is in `app.js`, styles in `style.css`, and markup in `index.html`.
 - **Mock data**: Generated in-browser for all partners and all filter permutations, including realistic opportunity names, companies, statuses, revenue, and gross profit margins.
 - **Responsive design**: Layout is clean and modern, suitable for desktop and large tablet screens.
 - **Branding**: Uses the official Aqueduct Technologies PNG logo.
-- **Export libraries**: Uses SheetJS for Excel export and jsPDF (with autoTable) for PDF export. No installation required—libraries are included locally.
 
 ## Customization
 - To add or remove partners, edit the `mockData` array in `app.js`.
