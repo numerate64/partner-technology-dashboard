@@ -11,7 +11,9 @@
         <img src="aqueduct-logo.png" alt="Aqueduct Technologies Logo" class="dashboard-logo left-logo">
         <h1>Partner Technology Dashboard</h1>
         <div class="filters">
-            <button id="export-dashboard-csv" class="export-btn">Export Dashboard CSV</button>
+            <button id="export-dashboard-csv" class="export-btn">CSV</button>
+            <button id="export-dashboard-xlsx" class="export-btn">Excel</button>
+            <button id="export-dashboard-pdf" class="export-btn">PDF</button>
             <label for="year-select">Year:</label>
             <select id="year-select"></select>
             <label for="time-filter">View By:</label>
@@ -35,13 +37,15 @@
                 <!-- Data will be injected by JS -->
             </tbody>
         </table>
-        <div id="details-modal" class="modal hidden">
+        <div id="details-modal" class="modal hidden" style="resize: both; overflow: auto; min-width: 500px; min-height: 320px; max-width: 98vw; max-height: 98vh;">
             <div class="modal-content">
                 <span class="close-btn">&times;</span>
                 <div id="modal-body"></div>
             </div>
         </div>
     </div>
+    <script src="xlsx.full.min.js"></script>
+    <script src="jspdf.umd.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

@@ -453,6 +453,119 @@ document.getElementById('export-dashboard-csv').onclick = function() {
   exportDashboardCSV(timeFilter.value, yearSelect.value);
 };
 
+// --- EXCEL EXPORT ---
+document.getElementById('export-dashboard-xlsx').onclick = function() {
+  let filter = timeFilter.value;
+  let year = yearSelect.value;
+  let dataToRender = mockData;
+  if (currentSort.col) {
+    dataToRender = sortData(mockData, filter, currentSort.col, currentSort.dir, year);
+  }
+  let ws_data = [[
+    'Partner',
+    'Closed Won Revenue',
+    'Closed Won Gross Profit',
+    'Closed Lost Revenue',
+    'Closed Lost Gross Profit',
+    'Forecasted Revenue',
+    'Forecasted Gross Profit'
+  ]];
+  let totalWon = 0, totalWonGP = 0, totalLost = 0, totalLostGP = 0, totalForecast = 0, totalForecastGP = 0;
+  dataToRender.forEach(partner => {
+    const agg = aggregate(partner, filter, year);
+    ws_data.push([
+      partner.partner,
+      agg.closedWon.rev,
+      agg.closedWon.gp,
+      agg.closedLost.rev,
+      agg.closedLost.gp,
+      agg.forecast.rev,
+      agg.forecast.gp
+    ]);
+    totalWon += agg.closedWon.rev;
+    totalWonGP += agg.closedWon.gp;
+    totalLost += agg.closedLost.rev;
+    totalLostGP += agg.closedLost.gp;
+    totalForecast += agg.forecast.rev;
+    totalForecastGP += agg.forecast.gp;
+  });
+  ws_data.push([
+    'TOTALS',
+    totalWon,
+    totalWonGP,
+    totalLost,
+    totalLostGP,
+    totalForecast,
+    totalForecastGP
+  ]);
+  var ws = XLSX.utils.aoa_to_sheet(ws_data);
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Dashboard");
+  XLSX.writeFile(wb, `dashboard_${filter}_${year}.xlsx`);
+};
+
+// --- PDF EXPORT ---
+document.getElementById('export-dashboard-pdf').onclick = function() {
+  let filter = timeFilter.value;
+  let year = yearSelect.value;
+  let dataToRender = mockData;
+  if (currentSort.col) {
+    dataToRender = sortData(mockData, filter, currentSort.col, currentSort.dir, year);
+  }
+  let rows = [
+    [
+      'Partner',
+      'Closed Won Revenue',
+      'Closed Won Gross Profit',
+      'Closed Lost Revenue',
+      'Closed Lost Gross Profit',
+      'Forecasted Revenue',
+      'Forecasted Gross Profit'
+    ]
+  ];
+  let totalWon = 0, totalWonGP = 0, totalLost = 0, totalLostGP = 0, totalForecast = 0, totalForecastGP = 0;
+  dataToRender.forEach(partner => {
+    const agg = aggregate(partner, filter, year);
+    rows.push([
+      partner.partner,
+      agg.closedWon.rev,
+      agg.closedWon.gp,
+      agg.closedLost.rev,
+      agg.closedLost.gp,
+      agg.forecast.rev,
+      agg.forecast.gp
+    ]);
+    totalWon += agg.closedWon.rev;
+    totalWonGP += agg.closedWon.gp;
+    totalLost += agg.closedLost.rev;
+    totalLostGP += agg.closedLost.gp;
+    totalForecast += agg.forecast.rev;
+    totalForecastGP += agg.forecast.gp;
+  });
+  rows.push([
+    'TOTALS',
+    totalWon,
+    totalWonGP,
+    totalLost,
+    totalLostGP,
+    totalForecast,
+    totalForecastGP
+  ]);
+  // PDF generation
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'landscape' });
+  doc.setFontSize(14);
+  doc.text('Partner Technology Dashboard', 14, 16);
+  doc.autoTable({
+    head: [rows[0]],
+    body: rows.slice(1),
+    startY: 22,
+    styles: { fontSize: 10 },
+    margin: { left: 14, right: 14 }
+  });
+  doc.save(`dashboard_${filter}_${year}.pdf`);
+};
+
 // --- EXPORT OPPORTUNITIES FROM MODAL ---
 function exportOpportunitiesCSV(partnerName, filter, year, status) {
   const partner = mockData.find(p => p.partner === partnerName);
@@ -496,7 +609,7 @@ function exportOpportunitiesCSV(partnerName, filter, year, status) {
 // Add export button to modal dynamically
 function addExportModalBtn(partnerName, filter, year, status) {
   let btn = document.createElement('button');
-  btn.textContent = 'Export Opportunities CSV';
+  btn.textContent = 'CSV';
   btn.className = 'export-btn';
   btn.onclick = function() {
     exportOpportunitiesCSV(partnerName, filter, year, status);

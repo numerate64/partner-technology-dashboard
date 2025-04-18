@@ -78,6 +78,12 @@ a.partner-link {
     max-width: 600px;
     box-shadow: 0 4px 24px rgba(0,0,0,0.13);
     position: relative;
+    resize: both;
+    overflow: auto;
+    min-width: 500px;
+    min-height: 320px;
+    max-width: 98vw;
+    max-height: 98vh;
 }
 .close-btn {
     position: absolute;
@@ -89,6 +95,19 @@ a.partner-link {
 }
 #modal-body {
     margin-top: 12px;
+}
+#modal-body table {
+    table-layout: auto;
+    width: 100%;
+    min-width: 900px;
+    white-space: nowrap;
+    overflow-x: auto;
+    font-size: 15px;
+}
+#modal-body th, #modal-body td {
+    padding: 7px 12px;
+    text-align: left;
+    white-space: nowrap;
 }
 .sortable {
     cursor: pointer;
@@ -132,9 +151,14 @@ a.partner-link {
     padding: 8px 18px;
     font-size: 15px;
     font-weight: 500;
-    margin-right: 18px;
+    margin-right: 12px;
+    margin-bottom: 6px;
     cursor: pointer;
     transition: background 0.18s;
+    display: inline-block;
+}
+.export-btn:last-child {
+    margin-right: 0;
 }
 .export-btn:hover {
     background: #265bb7;
