@@ -4,7 +4,7 @@
 This dashboard provides a mock, interactive view of aggregate sales activity for a set of technology partners, similar to what you might see from a Salesforce tenant. It is designed for demo and internal reporting use, with realistic sample data for all major partners and time periods.
 
 ## Features
-- **Partner rack**: See all partners in a sortable table with columns for Closed Won, Closed Lost, and Forecasted revenue/gross profit.
+- **Partner stack rank**: See all partners in a sortable table with columns for Closed Won, Closed Lost, and Forecasted revenue/gross profit.
 - **Time filters**: Filter data by week, month, quarter, or year, and select the reporting year (last 6 years supported).
 - **Totals**: See column totals for all metrics at a glance.
 - **Details on click**: Click any partner or revenue cell to drill down into opportunity-level details, including company, status, revenue, gross profit, sales rep, SA, and close date, with subtotals.
